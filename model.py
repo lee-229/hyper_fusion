@@ -3,7 +3,7 @@ import torch.nn as nn
 import numpy as np
 import math
 import torch.nn.init as int
-
+from models.Guidedfilter import guideFilter
 
 # -------------Initialization----------------------------------------  初始化 3种
 def init_weights(*modules):
@@ -61,9 +61,9 @@ class CALayer(nn.Module):
 
 # -----------------------------------------------------  pannet网络
 class Block2(nn.Module):
-    def __init__(self, n_feature=16, channel=191+7):
+    def __init__(self, n_feature=16, channel=7):
         super(Block2, self).__init__()
-
+        channel = channel+7
         self.conv1 = nn.Sequential(
             conv(channel, n_feature, kernel_size=3, bias=True),
             nn.ReLU(inplace=True),
@@ -87,7 +87,7 @@ class Block2(nn.Module):
 
 ##########################################################################
 class Block3(nn.Module):
-    def __init__(self, channel=191, reduction=16):
+    def __init__(self, channel, reduction=16):
         super(Block3, self).__init__()
         self.relu = nn.ReLU()
         self.conv01 = conv(48,32,3,True)
@@ -106,13 +106,13 @@ class Block3(nn.Module):
         return out
 
 class Hyper_DSNet(nn.Module):
-    def __init__(self):
+    def __init__(self,data_in_channel):
         super(Hyper_DSNet, self).__init__()
 
-        self.block2 = Block2()
-        self.block3 = Block3()
-        self.CA = CALayer(191, 4, bias=True)
-        self.convlast = conv(112, 191, 1, True)
+        self.block2 = Block2(channel=data_in_channel)
+        self.block3 = Block3(channel=data_in_channel)
+        self.CA = CALayer(data_in_channel, 4, bias=True)
+        self.convlast = conv(112, data_in_channel, 1, True)
 
     def forward(self, x, y, z, ms):  # x:pan y:edge_pan z:lms ms:ms
         input1 = torch.cat((x,y,z),1)

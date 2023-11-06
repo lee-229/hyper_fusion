@@ -1,0 +1,7 @@
+output_fig/
+outputs/
+tensorboard/
+Logs/
+data/
+Weights/
+

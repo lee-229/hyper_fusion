@@ -47,7 +47,7 @@ def my_compute_sam_ergas(tensor_data,data_file='data/Test_WDC.h5',img_number = 4
     for i in range(img_number):  # i = 0123
         mynet = tensor_data[i, :, :, :]  # 128 128 191
         ref = tensor_ref_data[i, :, :, :]  # 128 128 191
-        sam, ergas = compute_index(ref, mynet, 1)
+        sam, ergas = compute_index(ref, mynet, 4)
         ergas_value[i] = ergas.float()
         sam_value[i] = sam.float()
     ERGAS = np.mean(ergas_value)
